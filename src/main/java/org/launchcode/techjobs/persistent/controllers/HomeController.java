@@ -13,7 +13,6 @@ import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -50,20 +49,24 @@ public class HomeController {
 
     @PostMapping("add")
     public String processAddJobForm(@ModelAttribute @Valid Job newJob,
-                                       Errors errors, Model model, @RequestParam int employerId, @RequestParam List<Integer> skills) {
+                                       Errors errors, Model model, @RequestParam int employerId,
+                                        @RequestParam List<Integer> skills) {
 
         if (errors.hasErrors()) {
-            model.addAttribute("title", "Add Job");
-            model.addAttribute(new Job());
-            model.addAttribute("employers", employerRepository.findAll());
             return "add";
+
         }
-        Optional<Employer> optEmployer = employerRepository.findById(employerId);
-        Iterable<Skill> itSkill = skillRepository.findAllById(skills);
-        newJob.setEmployer(optEmployer.get());
-        jobRepository.save(newJob);
-        return "redirect:";
-    }
+
+            Employer optEmployer = employerRepository.findById(employerId).orElse(new Employer());
+            newJob.setEmployer(optEmployer);
+
+            List<Skill> skillObjs = (List<Skill>) skillRepository.findAllById(skills);
+            newJob.setSkills(skillObjs);
+
+            jobRepository.save(newJob);
+
+            return "redirect:";
+        }
 
     @GetMapping("view/{jobId}")
     public String displayViewJob(Model model, @PathVariable int jobId) {
