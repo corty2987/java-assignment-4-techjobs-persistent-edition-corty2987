@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
-import java.util.Optional;
+
 
 /**
  * Created by LaunchCode
@@ -51,12 +51,10 @@ public class HomeController {
     public String processAddJobForm(@ModelAttribute @Valid Job newJob,
                                        Errors errors, Model model, @RequestParam int employerId,
                                         @RequestParam List<Integer> skills) {
-
         if (errors.hasErrors()) {
             return "add";
 
         }
-
             Employer optEmployer = employerRepository.findById(employerId).orElse(new Employer());
             newJob.setEmployer(optEmployer);
 
